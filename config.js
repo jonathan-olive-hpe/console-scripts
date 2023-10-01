@@ -5,13 +5,13 @@ const timeStamp = new Date();
 
 const dates = {
     sinceYear:2023,
-    sinceMount:9,
-    sinceDate:1,
+    sinceMount:8,
+    sinceDate:27,
     sinceHour:0,
     sinceMinute:0,
     untilYear:2023,
     untilMount:9,
-    untilDate:10,
+    untilDate:5,
     untilHour:0,
     untilMinute:0
 }
@@ -23,7 +23,7 @@ const initialUntilDate = moment(`${dates.untilYear}-${(Number(dates.untilMount))
 const apiKey = `SSWS 007jqNreyFLfm76qRcUaO2b3tfZYudeDs06DvVfL4F`
 
 
-
+let records = 0
 
 const getData = (discardHeaders = false,url) => {
     console.log({ url });
@@ -32,11 +32,13 @@ const getData = (discardHeaders = false,url) => {
             .get(url, { headers: { Authorization: apiKey } })
             .then((resp) => {
                 const lines = resp.data.split("\n");
-                console.log('length',lines.length);
+                //console.log('length',lines.length);
                 if (discardHeaders) {
+                    console.log(lines.length -1,' records') 
                     const linesWithoutHeaders = lines.slice(1).join("\n");
                     resolve(linesWithoutHeaders);
                 } else {
+                    console.log(lines.length,' records') 
                     resolve(resp.data);
                 }
             })
@@ -55,7 +57,8 @@ module.exports = {
     dates,
     initialSinceDate,
     initialUntilDate,
-    getData
+    getData,
+    records
 
 }
 

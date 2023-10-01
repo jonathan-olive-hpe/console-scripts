@@ -6,7 +6,7 @@ const {
     url,
     initialSinceDate,
     initialUntilDate,
-    getData
+    getData,
 } = require("./config");
 
 
@@ -14,6 +14,9 @@ const diffDays = moment(initialUntilDate).diff(initialSinceDate, "days");
 const firstcall = 0;
 console.log({diffDays});
 
+if(diffDays < 0){
+    throw new Error('since dates must be lower then until dates')
+}
 
 
 
@@ -56,19 +59,14 @@ const getLogsCSV = async () => {
                         .toString()
                         .padStart(2, 0)}%3A00`;
 
-        const URLCompleted = `${url}since=${sinceQuery}&until=${untilQuery}&q=`;
-        console.log(63,{ sinceDate });
-        console.log(64,{ untilDate });
-
-        if (i >= firstcall) {
-            console.log('primera llamada')
+        const URLCompleted = `${url}since=${sinceQuery}&until=${untilQuery}&filter=eventType+eq+%22user.session.start%22+and+outcome.result+eq+%22FAILURE%22`;
+        if (i <= firstcall) {
             getData(false,URLCompleted)
             .then((data) => {
                 fs.writeFileSync(path, data, 'utf-8')
             })
             .catch(error => { clearInterval(interval); console.log(error) });
         } else {
-            console.log('segunda llamada')
             getData(true,URLCompleted)
             .then((data) => {
                 fs.appendFileSync(path, data, 'utf-8')
@@ -81,7 +79,7 @@ const getLogsCSV = async () => {
         if (i >= diffDays) {
             clearInterval(interval);
         }
-    }, 1000);
+    }, 4000);
 };
 
 getLogsCSV();
